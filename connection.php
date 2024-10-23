@@ -1,13 +1,27 @@
 <?php
 
+require 'vendor/autoload.php';
+
+use Dotenv\Dotenv;
+
 class Database
 {
+
     public static $connection;
 
     public static function setupConnection()
     {
         if (!isset(Database::$connection)) {
-            Database::$connection = new mysqli("localhost", "root", "password", "MarsLoanDB", "3306");
+            $dotenv = Dotenv::createImmutable(__DIR__);
+            $dotenv->load();
+
+            Database::$connection = new mysqli(
+                $_ENV['DB_HOST'],
+                $_ENV['DB_USER'],
+                $_ENV['DB_PASS'],
+                $_ENV['DB_NAME'],
+                $_ENV['DB_PORT']
+            );
 
             if (Database::$connection->connect_error) {
                 die("Connection failed: " . Database::$connection->connect_error);

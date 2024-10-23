@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<?php include "connection.php";?>
+<!-- Table load query -->
+<?php include "connection.php"; ?>
 <?php
 $rs = Database::searchRS("SELECT loan.loan_order_id, loan.product_name, loan.loan_amount, order_status.status AS status_name
 FROM loan
@@ -59,6 +60,7 @@ $num = $rs->num_rows;
         </tr>
       </thead>
       <tbody id="tableBody">
+        <!-- Table Load -->
         <?php
         for ($i = 0; $i < $num; $i++) {
           $d = $rs->fetch_assoc();
@@ -73,6 +75,7 @@ $num = $rs->num_rows;
         <?php
         }
         ?>
+        <!-- Table Load -->
       </tbody>
     </table>
 
