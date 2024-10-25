@@ -1,65 +1,51 @@
 <?php
-
-require 'vendor/autoload.php';
-
-use Dotenv\Dotenv;
-
 class Database
 {
+    public static $conn;
 
-    public static $connection;
-
-    public static function setupConnection()
+    public static function setupConn()
     {
-        if (!isset(Database::$connection)) {
-            $dotenv = Dotenv::createImmutable(__DIR__);
-            $dotenv->load();
+        $servername = "localhost";
+        $username = "root";
+        $password = "Vimandya@20030908";
+        $dbname = "marsloandb";
+        $port = 3306;
 
-            Database::$connection = new mysqli(
-                $_ENV['DB_HOST'],
-                $_ENV['DB_USER'],
-                $_ENV['DB_PASS'],
-                $_ENV['DB_NAME'],
-                $_ENV['DB_PORT']
-            );
+        if (!isset(Database::$conn)) {
+            Database::$conn = new mysqli($servername, $username, $password, $dbname, $port);
 
-            if (Database::$connection->connect_error) {
-                die("Connection failed: " . Database::$connection->connect_error);
+            // Check for connection errors
+            if (Database::$conn->connect_error) {
+                die("Connection failed: " . Database::$conn->connect_error);
             }
         }
     }
 
     public static function iud($q)
     {
-        Database::setupConnection();
-        if (Database::$connection->query($q) === FALSE) {
-            echo "Error: " . Database::$connection->error;
+        Database::setupConn();
+        if (Database::$conn->query($q) === FALSE) {
+            die("Error executing query: " . Database::$conn->error);
         }
     }
 
     public static function search($q)
     {
-        Database::setupConnection();
-        $resultset = Database::$connection->query($q);
-
-        if (!$resultset) {
-            echo "Error: " . Database::$connection->error;
-            return [];
+        Database::setupConn();
+        $resultSet = Database::$conn->query($q);
+        if ($resultSet === FALSE) {
+            die("Error executing query: " . Database::$conn->error);
         }
-
-        $data = [];
-        while ($row = $resultset->fetch_assoc()) {
-            $data[] = $row;
-        }
-
-        return $data;
+        return $resultSet;
     }
 
-    public static function searchRS($q)
+    public static function closeConn()
     {
-
-        Database::setupConnection();
-        $resultset = Database::$connection->query($q);
-        return $resultset;
+        if (isset(Database::$conn)) {
+            Database::$conn->close();
+            //unset(Database::$conn);
+            Database::$conn = null; 
+        }
     }
 }
+?>
